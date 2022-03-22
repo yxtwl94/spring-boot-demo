@@ -3,7 +3,7 @@ package com.oleyang.springbootdemo.amqp;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class ConsumerRabbitListener {
 
     // 监听特定队列的消息然后拿到消息运行，消息的塞入在SpringBootAmqpTest
