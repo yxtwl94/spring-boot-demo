@@ -33,9 +33,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 获取token
         String headerToken = request.getHeader("user_token");
-        // login请求放行
+        // login和注册 请求放行
         String servletPath = request.getServletPath();
-        if (Objects.equals(servletPath, "/login")) {
+        if (Objects.equals(servletPath, "/login") || Objects.equals(servletPath, "/register")) {
             // 放行，一般是登录不携带token
             filterChain.doFilter(request, response);
             return;

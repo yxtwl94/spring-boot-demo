@@ -50,4 +50,11 @@ public class LoginController {
         ResponseResult res = userService.logout();
         return res;
     }
+
+    @PostMapping("/register")
+    @ResponseBody
+    public ResponseResult register(@RequestBody User user){
+        ResponseResult res = userService.register(user);
+        return res;
+    }
 }

@@ -1,5 +1,6 @@
 package com.oleyang.springbootdemo.dao;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)  // redis序列化
 public class User {
 
-    @TableId
+    @TableId(value = "id",type = IdType.AUTO)
     public Long id;
     public String username;
     public String password;

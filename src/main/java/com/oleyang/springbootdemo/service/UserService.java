@@ -68,6 +68,15 @@ public class UserService {
         return new ResponseResult(HttpStatus.OK.value(), "注销成功", new Date(), null);
     }
 
+    public ResponseResult register(User user) {
+        // 传入的是明文密码
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encodePass = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(encodePass);
+        userMapper.insert(user);
+        return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
+    }
+
     // 自己实现的认证，不依赖security
 //    public ResponseResult myLogin(User user){
 //        // 1 检查用户密码正确
