@@ -57,4 +57,11 @@ public class LoginController {
         ResponseResult res = userService.register(user);
         return res;
     }
+
+    @GetMapping("/userNum")
+    @ResponseBody
+    public ResponseResult userNum(){
+        ResponseResult res = userService.getUserNum();
+        return res;
+    }
 }

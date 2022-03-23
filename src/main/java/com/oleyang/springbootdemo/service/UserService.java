@@ -76,7 +76,7 @@ public class UserService {
         try {
             userMapper.insert(user);
         } catch (Exception e){
-            return new ResponseResult(HttpStatus.CONFLICT.value(), "用户名已存在", new Date(), null);
+            return new ResponseResult(HttpStatus.CONFLICT.value(), "数据库插入操作异常", new Date(), null);
         }
         return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
     }
@@ -93,6 +93,11 @@ public class UserService {
             return new ResponseResult(HttpStatus.CONFLICT.value(), "用户名已存在", new Date(), null);
         }
         return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
+    }
+
+    public ResponseResult getUserNum() {
+        Long num = userMapper.selectCount(null);
+        return new ResponseResult(HttpStatus.OK.value(), "成功", new Date(), num);
     }
 
     // 自己实现的认证，不依赖security
