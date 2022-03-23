@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // 获取token
         String headerToken = request.getHeader("user_token");
         // 无token携带的方形（静态资源 注册 登陆啥的）
-        if (Objects.isNull(headerToken)) {
+        if (StringUtil.isNullOrEmpty(headerToken)) {
             // 放行，一般是登录不携带token
             filterChain.doFilter(request, response);
             return;
