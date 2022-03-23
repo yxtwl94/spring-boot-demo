@@ -73,7 +73,25 @@ public class UserService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encodePass = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodePass);
-        userMapper.insert(user);
+        try {
+            userMapper.insert(user);
+        } catch (Exception e){
+            return new ResponseResult(HttpStatus.CONFLICT.value(), "用户名已存在", new Date(), null);
+        }
+        return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
+    }
+
+    public ResponseResult editUser(User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User realUser = (User) authentication.getPrincipal();
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("username", realUser.getUsername());
+        try {
+            // qw匹配已有用户，替换为user
+            userMapper.update(user, qw);
+        } catch (Exception e){
+            return new ResponseResult(HttpStatus.CONFLICT.value(), "用户名已存在", new Date(), null);
+        }
         return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
     }
 
