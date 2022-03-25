@@ -5,7 +5,6 @@ import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.dao.UserDetail;
 import com.oleyang.springbootdemo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
