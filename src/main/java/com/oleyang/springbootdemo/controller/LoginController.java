@@ -27,12 +27,6 @@ public class LoginController {
         return res;
     }
 
-    @GetMapping("/hello")
-    @ResponseBody
-    public String hello(){
-        return "ok";
-    }
-
     @GetMapping("/getUserInfo")
     @ResponseBody
     public ResponseResult getUserInfo(){
@@ -60,8 +54,8 @@ public class LoginController {
 
     @GetMapping("/userNum")
     @ResponseBody
-    public ResponseResult userNum(){
-        ResponseResult res = userService.getUserNum();
+    public ResponseResult userNum(String username){
+        ResponseResult res = userService.getUserNum(username);
         return res;
     }
 }

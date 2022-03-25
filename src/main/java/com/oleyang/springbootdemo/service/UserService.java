@@ -1,6 +1,9 @@
 package com.oleyang.springbootdemo.service;
 
+import ch.qos.logback.core.joran.action.IADataForComplexProperty;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oleyang.springbootdemo.dao.ResponseResult;
 import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
@@ -17,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -83,22 +87,69 @@ public class UserService {
     }
 
     public ResponseResult editUser(User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User realUser = (User) authentication.getPrincipal();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User realUser = (User) authentication.getPrincipal();
+        // 根据用户名唯一性进行修改
         QueryWrapper<User> qw = new QueryWrapper<>();
-        qw.eq("username", realUser.getUsername());
+        qw.eq("username", user.getUsername());
         try {
             // qw匹配已有用户，替换为user
             userMapper.update(user, qw);
         } catch (Exception e){
             return new ResponseResult(HttpStatus.CONFLICT.value(), "用户名已存在", new Date(), null);
         }
-        return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
+        return new ResponseResult(HttpStatus.OK.value(), "修改成功", new Date(), user);
     }
 
-    public ResponseResult getUserNum() {
-        Long num = userMapper.selectCount(null);
+    public ResponseResult getUserNum(String username) {
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.like("username", username);
+        Long num = userMapper.selectCount(qw);
         return new ResponseResult(HttpStatus.OK.value(), "成功", new Date(), num);
+    }
+
+    public ResponseResult getUserPage(String username, int cur, int size) {
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.like("username", username);
+
+        Page<User> page = new Page<>(cur, size);
+        Page<User> userPage = userMapper.selectPage(page, qw);
+        List<User> users = userPage.getRecords();
+        return new ResponseResult(HttpStatus.OK.value(), "成功", new Date(), users);
+    }
+
+    public ResponseResult deleteUser(String username) {
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("username", username);
+        try {
+            userMapper.delete(qw);
+            return new ResponseResult(HttpStatus.OK.value(), "删除成功", new Date(), null);
+        } catch (Exception e){
+            return new ResponseResult(HttpStatus.NOT_ACCEPTABLE.value(), HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), new Date(), null);
+        }
+    }
+
+    public ResponseResult searchUser(String username, int cur,int size) {
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.like("username", username);
+        try {
+            Page<User> page = new Page<>(cur, size);
+            Page<User> users = userMapper.selectPage(page, qw);
+            return new ResponseResult(HttpStatus.OK.value(), "成功", new Date(), users.getRecords());
+        } catch (Exception e){
+            return new ResponseResult(HttpStatus.NOT_ACCEPTABLE.value(), HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), new Date(), null);
+        }
+    }
+    // 获取一个用户
+    public ResponseResult getOneUser(String username) {
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("username", username);
+        try {
+            User user = userMapper.selectOne(qw);
+            return new ResponseResult(HttpStatus.OK.value(), "成功", new Date(), user);
+        } catch (Exception e){
+            return new ResponseResult(HttpStatus.NOT_ACCEPTABLE.value(), HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), new Date(), null);
+        }
     }
 
     // 自己实现的认证，不依赖security
