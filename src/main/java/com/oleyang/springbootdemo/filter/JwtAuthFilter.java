@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
 import com.oleyang.springbootdemo.utils.JwtUtil;
+import com.oracle.tools.packager.Log;
 import io.jsonwebtoken.Claims;
 import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,6 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -58,9 +62,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             QueryWrapper<User> qw = new QueryWrapper<>();
             qw.eq("username", username);
             User user = userMapper.selectOne(qw);
-            // todo 获取权限信息
+            // 获取权限信息并设置
+            List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(user,null, null);
+                    new UsernamePasswordAuthenticationToken(user,null, authorities);
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             filterChain.doFilter(request, response);
         } else {

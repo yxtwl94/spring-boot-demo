@@ -73,6 +73,7 @@ public class UserService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encodePass = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodePass);
+        // 默认权限是空类型，一般权限不单独设置
         try {
             userMapper.insert(user);
         } catch (Exception e){

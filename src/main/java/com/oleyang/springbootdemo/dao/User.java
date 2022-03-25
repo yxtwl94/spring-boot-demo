@@ -16,8 +16,9 @@ import lombok.experimental.Accessors;
 public class User {
 
     @TableId(value = "id",type = IdType.AUTO)
-    public Long id;
-    public String username;
-    public String password;
-    public String nickname;
+    private Long id;
+    private String username;
+    private String password;
+    private String nickname;
+    private String role;
 }
