@@ -62,8 +62,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             QueryWrapper<User> qw = new QueryWrapper<>();
             qw.eq("username", username);
             User user = userMapper.selectOne(qw);
-            // 获取权限信息并设置
-            List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+            // 数据库获取权限信息并设置
+            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(user,null, authorities);
