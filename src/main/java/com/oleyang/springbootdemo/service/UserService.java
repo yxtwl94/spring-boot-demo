@@ -96,7 +96,7 @@ public class UserService {
             // qw匹配已有用户，替换为user
             userMapper.update(user, qw);
         } catch (Exception e){
-            return new ResponseResult(HttpStatus.CONFLICT.value(), "用户名已存在", new Date(), null);
+            return new ResponseResult(HttpStatus.CONFLICT.value(), "修改失败", new Date(), null);
         }
         return new ResponseResult(HttpStatus.OK.value(), "修改成功", new Date(), user);
     }
