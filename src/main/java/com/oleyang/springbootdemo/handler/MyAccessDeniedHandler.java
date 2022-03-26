@@ -1,4 +1,4 @@
-package com.oleyang.springbootdemo.exceptionHandler;
+package com.oleyang.springbootdemo.handler;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;

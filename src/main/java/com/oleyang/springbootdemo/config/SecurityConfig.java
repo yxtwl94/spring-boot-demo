@@ -1,6 +1,6 @@
 package com.oleyang.springbootdemo.config;
-import com.oleyang.springbootdemo.exceptionHandler.MyAccessDeniedHandler;
-import com.oleyang.springbootdemo.exceptionHandler.UnAuthorizedHandler;
+import com.oleyang.springbootdemo.handler.MyAccessDeniedHandler;
+import com.oleyang.springbootdemo.handler.UnAuthorizedHandler;
 import com.oleyang.springbootdemo.filter.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

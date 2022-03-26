@@ -54,6 +54,7 @@ public class UserService {
         return new ResponseResult(HttpStatus.OK.value(), "登陆成功", new Date(), jwt_token);
     }
 
+    // 这一步获取用户信息，重要
     public ResponseResult getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
