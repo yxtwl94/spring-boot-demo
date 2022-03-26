@@ -1,6 +1,5 @@
 package com.oleyang.springbootdemo.handler;
 
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -26,7 +25,7 @@ public class UnAuthorizedHandler implements AuthenticationEntryPoint{
         try {
             json.put("code", HttpStatus.UNAUTHORIZED.value());
             json.put("message", "用户或密码错误");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         writer.write(json.toString());

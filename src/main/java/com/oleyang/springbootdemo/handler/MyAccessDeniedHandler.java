@@ -1,5 +1,5 @@
 package com.oleyang.springbootdemo.handler;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,7 +25,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
         try {
             json.put("code", HttpStatus.FORBIDDEN.value());
             json.put("message", "认证失败");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         writer.write(json.toString());
