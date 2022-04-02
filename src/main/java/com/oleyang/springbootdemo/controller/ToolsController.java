@@ -1,19 +1,16 @@
 package com.oleyang.springbootdemo.controller;
 
 import com.oleyang.springbootdemo.dao.ResponseResult;
-import com.oleyang.springbootdemo.dao.User;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 
 @RestController
 public class ToolsController {
