@@ -12,7 +12,6 @@ import java.util.HashSet;
 
 @ServerEndpoint(value = "/ws", encoders = {WebSocketEncoder.class})
 @Controller
-@EnableScheduling
 public class MyWebSocketController{
     // 在线人数,缓存session用作消息推送
     public static HashSet<Session> sessionSet = new HashSet<>();
@@ -20,17 +19,24 @@ public class MyWebSocketController{
     public static ArrayList<String> webSocketMsgList = new ArrayList<>();
 
     @OnOpen
-    public void onOpen(Session session){
+    public void onOpen(Session session) throws IOException, EncodeException {
         sessionSet.add(session);
         System.out.println("session: " + session.getId() + " 当前人数：" + sessionSet.size());
+        webSocketMsgList.add("欢迎session " + session.getId() + "加入");
+        // 群发消息
+        for (Session s : sessionSet) {
+            s.getBasicRemote().sendObject(webSocketMsgList);
+        }
     }
 
     // 收到前端信息, 返回所有消息列表
     @OnMessage
     public void onMessage(String message, Session session) throws IOException, EncodeException {
-        System.out.println("收到消息：" + message);
         webSocketMsgList.add(message);
-        session.getBasicRemote().sendObject(webSocketMsgList);
+        // 群发消息
+        for (Session s : sessionSet) {
+            s.getBasicRemote().sendObject(webSocketMsgList);
+        }
     }
 
     // 错误调用
@@ -41,18 +47,23 @@ public class MyWebSocketController{
 
     // 关闭连接
     @OnClose
-    public void onClose(Session session){
+    public void onClose(Session session) throws IOException, EncodeException {
+        webSocketMsgList.add("session: " + session.getId() + "离开");
         sessionSet.remove(session);
+        // 群发消息
+        for (Session s : sessionSet) {
+            s.getBasicRemote().sendObject(webSocketMsgList);
+        }
         System.out.println("session: " + session.getId() + "关闭 " + "当前人数：" + sessionSet.size());
     }
 
     // 1秒推送一次
-    @Scheduled(cron = "*/1 * * * * ?")
-    public void sendMsg() throws IOException, EncodeException {
-        // 发送消息
-        for (Session session : sessionSet) {
-            session.getBasicRemote().sendObject(webSocketMsgList);
-        }
-    }
+//    @Scheduled(cron = "*/1 * * * * ?")
+//    public void sendMsg() throws IOException, EncodeException {
+//        // 发送消息
+//        for (Session session : sessionSet) {
+//            session.getBasicRemote().sendObject(webSocketMsgList);
+//        }
+//    }
 
 }
