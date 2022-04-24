@@ -1,7 +1,7 @@
 package com.oleyang.springbootdemo;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.oleyang.springbootdemo.config.SecurityConfig;
+import com.oleyang.springbootdemo.dao.ResponseResult;
 import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
 import com.oleyang.springbootdemo.service.UserService;
@@ -11,19 +11,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Slf4j
-@SpringBootTest
-class SpringBootDemoApplicationTests {
-	@Autowired
-	UserService userService;
+import java.util.List;
 
-	@Autowired
-	SecurityConfig securityConfig;
+@Slf4j
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class SpringBootDemoApplicationTests {
 
 	@Autowired
 	UserMapper userMapper;
+	@Autowired
+	UserService userService;
+	@Autowired
+	StringRedisTemplate stringRedisTemplate;
 
 	@Test
 	void testUserMapper(){
@@ -38,7 +40,8 @@ class SpringBootDemoApplicationTests {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		String rawPass = "123";
 		String encodePass = bCryptPasswordEncoder.encode(rawPass);
-		System.out.println(encodePass);
+		boolean matches = bCryptPasswordEncoder.matches(rawPass, encodePass);
+		assert matches;
 	}
 
 	@Test
@@ -54,6 +57,25 @@ class SpringBootDemoApplicationTests {
 		// 获取用户名信息
 		Object username = claims.get("username");
 		System.out.println("用户名:"+username); // 解析token
+	}
+
+	@Test
+	void testJoin(){
+		List<User> joinUser = userMapper.getUserJoinById(1);
+		System.out.println(joinUser);
+		assert !joinUser.get(0).getInfo().isEmpty();
+	}
+
+	@Test
+	void testLogin(){
+		User user = new User();
+		user.setPassword("123");
+		user.setUsername("admin");
+		ResponseResult responseResult = userService.loginWithSecurity(user);
+		System.out.println(responseResult);
+		assert responseResult.getCode() == 200;
+		stringRedisTemplate.delete("admin");
+
 	}
 
 }

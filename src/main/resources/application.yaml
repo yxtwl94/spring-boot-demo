@@ -24,11 +24,7 @@ spring:
 server:
   port: 3010
 
-mybatis:
-  # 指定全局配置文件，不能和configuration混用
-  # config-location: classpath:mybatis/mybatis-config.xml
-  # 指定mapper定义文件
-  mapper-locations: classpath:mybatis/mapper/*.xml
+mybatis-plus:
   configuration:
-    # 开启驼峰命名规则
     map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

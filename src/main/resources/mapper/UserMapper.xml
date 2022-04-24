@@ -5,4 +5,10 @@
 
 <!--确定一个mapper，配置sql语句的-->
 <mapper namespace="com.oleyang.springbootdemo.mapper.UserMapper">
+    <select id="findOneUser" parameterType="Integer" resultType="com.oleyang.springbootdemo.dao.User">
+        select * from user where id = #{id}
+    </select>
+    <select id="findPageXml" resultType="com.oleyang.springbootdemo.dao.User">
+        select * from user
+    </select>
 </mapper>

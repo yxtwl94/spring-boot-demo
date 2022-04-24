@@ -7,6 +7,7 @@ import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
 import com.oleyang.springbootdemo.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class UserService {
+public class UserService implements IUserService {
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
@@ -33,7 +34,7 @@ public class UserService {
     UserMapper userMapper;
 
     // 检查用户是否存在，密码是否准确
-    public ResponseResult loginWithSecurity(User user){
+    public ResponseResult loginWithSecurity(@NotNull User user){
         // 1 security config注入manager（里面有Password encoder）
         // 2 重写userservice方法，获取用户密码
         // 3 封装userdetail体，如果匹配成功则返回
@@ -71,7 +72,7 @@ public class UserService {
         return new ResponseResult(HttpStatus.OK.value(), "注销成功", new Date(), null);
     }
 
-    public ResponseResult register(User user) {
+    public ResponseResult register(@NotNull User user) {
         // 传入的是明文密码
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encodePass = bCryptPasswordEncoder.encode(user.getPassword());
@@ -85,7 +86,7 @@ public class UserService {
         return new ResponseResult(HttpStatus.OK.value(), "注册成功", new Date(), user);
     }
 
-    public ResponseResult editUser(User user) {
+    public ResponseResult editUser(@NotNull User user) {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        User realUser = (User) authentication.getPrincipal();
         // 根据用户名唯一性进行修改

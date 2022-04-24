@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SpringDataRedisTest {
 
     @Autowired
@@ -20,6 +21,7 @@ public class SpringDataRedisTest {
         stringRedisTemplate.opsForValue().set("key1", "value1", 1,TimeUnit.DAYS);
         String value = stringRedisTemplate.opsForValue().get("key1");
         System.out.println(value);
+        assert Objects.equals(value, "value1");
     }
 
     @Test
@@ -32,5 +34,7 @@ public class SpringDataRedisTest {
 
         String jwt_token2 = jwtUtil.createJWT("oleyang", expireTime);
         System.out.println(jwt_token2);
+
+        assert !jwt_token.equals(jwt_token2);
     }
 }
