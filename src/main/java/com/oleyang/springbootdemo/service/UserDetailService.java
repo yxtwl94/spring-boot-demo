@@ -30,6 +30,7 @@ public class UserDetailService implements UserDetailsService {
             throw new RuntimeException("没有找到用户");
         }
         // 查到了就构造userDetail对象
+        System.out.println("查到了用户" + user);
         return new UserDetail(user);
     }
 }

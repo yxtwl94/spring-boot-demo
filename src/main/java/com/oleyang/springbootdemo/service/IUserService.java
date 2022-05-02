@@ -1,9 +1,10 @@
 package com.oleyang.springbootdemo.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.oleyang.springbootdemo.dao.ResponseResult;
 import com.oleyang.springbootdemo.dao.User;
 
-public interface IUserService {
+public interface IUserService extends IService<User> {
     // 用户登录
     ResponseResult loginWithSecurity(User user);
     // 用户注册

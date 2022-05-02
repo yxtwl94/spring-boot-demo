@@ -9,19 +9,21 @@ public class MyRunnable implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(Thread.currentThread().getName() + " Start. Time = " + new Date());
         try {
             processCmd();
+            System.out.println(Thread.currentThread().getName() + " End. Time = " + new Date());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(Thread.currentThread().getName() + " End. Time = " + new Date());
         // 计数器结束 -1
-        countDownLatch.countDown();
+        if (countDownLatch != null) {
+            countDownLatch.countDown();
+        }
     }
 
     public void processCmd() throws InterruptedException {
-        Thread.sleep(1000);
+        // 随机等待1-5s
+        Thread.sleep((long) (Math.random() * 5000));
     }
 
     // toString

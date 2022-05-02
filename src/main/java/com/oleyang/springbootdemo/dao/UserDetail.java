@@ -5,9 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,11 +22,12 @@ public class UserDetail implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // //用户的权限集合
-//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-//                                                                    .getAuthentication()
-//                                                                    .getPrincipal();
-//        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        return null;
+        List<GrantedAuthority> listAuth = new ArrayList<>();
+
+        String role = user.getRole();
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+        listAuth.add(authority);
+        return listAuth;
     }
 
     @Override

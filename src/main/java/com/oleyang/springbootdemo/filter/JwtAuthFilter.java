@@ -3,6 +3,7 @@ package com.oleyang.springbootdemo.filter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
+import com.oleyang.springbootdemo.service.UserDetailService;
 import com.oleyang.springbootdemo.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,6 +30,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    UserDetailService userDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -54,15 +58,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // 根据username查到的redis有效token，保证客户端cookie的token过期可以匹配失败
         String redisToken = stringRedisTemplate.opsForValue().get(redisKey);
         if (Objects.equals(redisToken, headerToken)){
-            // 认证通过，根据username查到 获取user对象
-            QueryWrapper<User> qw = new QueryWrapper<>();
-            qw.eq("username", username);
-            User user = userMapper.selectOne(qw);
-            // 数据库获取权限信息并设置
-            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+            // 认证通过，根据username查到 获取user对象, 通过userDetail获取信息
+            UserDetails user = userDetailService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(user,null, authorities);
+                    new UsernamePasswordAuthenticationToken(user,null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             filterChain.doFilter(request, response);
         } else {

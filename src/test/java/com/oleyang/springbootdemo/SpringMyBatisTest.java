@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
+import com.oleyang.springbootdemo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class SpringMyBatisTest {
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    UserService userService;
 
     @Test
     void testMapper(){
@@ -48,4 +52,5 @@ public class SpringMyBatisTest {
         user.setUsername("testTime");
         userMapper.update(user, qw);
     }
+
 }

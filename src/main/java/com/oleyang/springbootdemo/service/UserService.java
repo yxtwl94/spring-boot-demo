@@ -2,6 +2,7 @@ package com.oleyang.springbootdemo.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oleyang.springbootdemo.dao.ResponseResult;
 import com.oleyang.springbootdemo.dao.User;
 import com.oleyang.springbootdemo.mapper.UserMapper;
@@ -9,7 +10,7 @@ import com.oleyang.springbootdemo.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,13 +26,13 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class UserService implements IUserService {
+public class UserService extends ServiceImpl<UserMapper, User> implements IUserService {
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
-    StringRedisTemplate stringRedisTemplate;
-    @Autowired
     UserMapper userMapper;
+    @Autowired
+    RedisTemplate<String, String> redisTemplate;
 
     // 检查用户是否存在，密码是否准确
     public ResponseResult loginWithSecurity(@NotNull User user){
@@ -40,6 +41,7 @@ public class UserService implements IUserService {
         // 3 封装userdetail体，如果匹配成功则返回
         UsernamePasswordAuthenticationToken usernamePassAuth =
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+        // 会通过userDetail查询数据库，然后进行密码匹配
         Authentication authentication = authenticationManager.authenticate(usernamePassAuth);
         if (Objects.isNull(authentication)){
             // 认证没通过
@@ -51,25 +53,31 @@ public class UserService implements IUserService {
         long expireTime = 1000 * 60 * 60 * 24;
         String jwt_token = jwtUtil.createJWT(user.getUsername(), expireTime);
         // 存入redis
-        stringRedisTemplate.opsForValue().set(user.getUsername(), jwt_token, expireTime, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(user.getUsername(), jwt_token, expireTime, TimeUnit.MILLISECONDS);
         return new ResponseResult(HttpStatus.OK.value(), "登陆成功", new Date(), jwt_token);
     }
 
     // 这一步获取用户信息，重要
     public ResponseResult getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+        Object user = authentication.getPrincipal();
         ResponseResult res = new ResponseResult(HttpStatus.OK.value(), "获取用户信息成功", new Date(), user);
         return res;
     }
 
     public ResponseResult logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        String username = user.getUsername();
-        // 删除redis信息
-        stringRedisTemplate.delete(username);
-        return new ResponseResult(HttpStatus.OK.value(), "注销成功", new Date(), null);
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            String username = user.getUsername();
+            // 删除redis信息
+            redisTemplate.delete(username);
+            return new ResponseResult(HttpStatus.OK.value(), "注销成功", new Date(), null);
+        } else {
+            return new ResponseResult(HttpStatus.UNAUTHORIZED.value(), "用户未登录", new Date(), principal);
+        }
+
     }
 
     public ResponseResult register(@NotNull User user) {
