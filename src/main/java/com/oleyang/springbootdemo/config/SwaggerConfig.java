@@ -30,8 +30,8 @@ public class SwaggerConfig {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("XX项目API") //  可以用来自定义API的主标题
-                .description("XX项目SwaggerAPI管理") // 可以用来描述整体的API
+                .title("spring项目API") //  可以用来自定义API的主标题
+                .description("spring项目SwaggerAPI管理") // 可以用来描述整体的API
                 .termsOfServiceUrl("") // 用于定义服务的域名
                 .version("1.0") // 可以用来定义版本。
                 .build(); //
